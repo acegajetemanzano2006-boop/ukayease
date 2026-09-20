@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Edit Product — UkayEase{% endblock %}
+{% block page_title %}Edit Product{% endblock %}
+
+{% block content %}
+<div class="card form-card">
+    <form method="POST" action="{{ url_for('edit_product', id=product.id) }}" class="product-form">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="item_name">Item Name *</label>
+                <input type="text" id="item_name" name="item_name" required
+                       value="{{ form.get('item_name', product.item_name) }}">
+            </div>
+            <div class="form-group">
+                <label for="category">Category *</label>
+                <select id="category" name="category" required>
+                    <option value="">— Select category —</option>
+                    {% for c in categories %}
+                    <option value="{{ c }}"
+                        {% if form.get('category', product.category) == c %}selected{% endif %}>
+                        {{ c }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="size">Size</label>
+                <input type="text" id="size" name="size"
+                       value="{{ form.get('size', product.size or '') }}">
+            </div>
+            <div class="form-group">
+                <label for="price">Price (₱) *</label>
+                <input type="number" id="price" name="price" required min="0" step="0.01"
+                       value="{{ form.get('price', product.price) }}">
+            </div>
+            <div class="form-group">
+                <label for="quantity">Quantity *</label>
+                <input type="number" id="quantity" name="quantity" required min="0" step="1"
+                       value="{{ form.get('quantity', product.quantity) }}">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="status">Status</label>
+                <select id="status" name="status">
+                    <option value="Available"
+                        {% if form.get('status', product.status) == 'Available' %}selected{% endif %}>
+                        Available
+                    </option>
+                    <option value="Sold"
+                        {% if form.get('status', product.status) == 'Sold' %}selected{% endif %}>
+                        Sold
+                    </option>
+                </select>
+            </div>
+        </div>
+
+        <p class="form-note">If quantity is 0, status will automatically become Sold.</p>
+
+        <div class="form-actions">
+            <a href="{{ url_for('products') }}" class="btn btn-outline">Cancel</a>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

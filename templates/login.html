@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Login — UkayEase{% endblock %}
+
+{% block auth_content %}
+<div class="login-page">
+    <div class="login-card">
+        <div class="login-header">
+            <div class="brand-icon large">🛍️</div>
+            <h1>UkayEase</h1>
+            <p>Easy Inventory. Easy Sales. Easy Ukay.</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash flash-{{ category }}" role="alert">
+                        {{ message }}
+                        <button class="flash-close" onclick="this.parentElement.remove()">×</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('login') }}" class="login-form">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required autofocus
+                       placeholder="Enter username" autocomplete="username">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required
+                       placeholder="Enter password" autocomplete="current-password">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+        </form>
+        <p class="login-hint">Default: admin / admin123</p>
+    </div>
+</div>
+{% endblock %}

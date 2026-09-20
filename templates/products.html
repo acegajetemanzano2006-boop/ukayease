@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Products — UkayEase{% endblock %}
+{% block page_title %}Products{% endblock %}
+
+{% block content %}
+<div class="toolbar">
+    <form method="GET" action="{{ url_for('products') }}" class="search-form" id="searchForm">
+        <input type="text" name="search" id="searchInput" value="{{ search }}"
+               placeholder="Search by name or category…" class="search-input">
+        <button type="submit" class="btn btn-secondary">Search</button>
+        {% if search or selected_category %}
+        <a href="{{ url_for('products') }}" class="btn btn-outline">Clear</a>
+        {% endif %}
+    </form>
+    <a href="{{ url_for('add_product') }}" class="btn btn-primary">+ Add Product</a>
+</div>
+
+{% if categories %}
+<div class="filter-pills">
+    <a href="{{ url_for('products', search=search) }}"
+       class="pill {% if not selected_category %}active{% endif %}">All</a>
+    {% for c in categories %}
+    <a href="{{ url_for('products', search=search, category=c.category) }}"
+       class="pill {% if selected_category == c.category %}active{% endif %}">
+        {{ c.category }}
+    </a>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="card">
+    <div class="table-wrap">
+        <table id="productsTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Item Name</th>
+                    <th>Category</th>
+                    <th>Size</th>
+                    <th>Price</th>
+                    <th>Qty</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in products %}
+                <tr>
+                    <td>{{ p.id }}</td>
+                    <td>{{ p.item_name }}</td>
+                    <td>{{ p.category }}</td>
+                    <td>{{ p.size or '—' }}</td>
+                    <td>₱{{ "{:,.2f}".format(p.price) }}</td>
+                    <td>{{ p.quantity }}</td>
+                    <td>
+                        <span class="badge badge-{{ 'available' if p.status == 'Available' else 'sold' }}">
+                            {{ p.status }}
+                        </span>
+                    </td>
+                    <td class="actions">
+                        <a href="{{ url_for('edit_product', id=p.id) }}" class="btn-sm btn-edit">Edit</a>
+                        <button type="button" class="btn-sm btn-delete"
+                                data-id="{{ p.id }}" data-name="{{ p.item_name }}"
+                                onclick="confirmDelete(this)">Delete</button>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="8" class="empty">No products found. Add your first item!</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Delete confirmation modal -->
+<div class="modal-overlay" id="deleteModal" hidden>
+    <div class="modal">
+        <h3>Delete Product?</h3>
+        <p>Are you sure you want to delete <strong id="deleteName"></strong>? This cannot be undone.</p>
+        <form method="POST" id="deleteForm">
+            <div class="modal-actions">
+                <button type="button" class="btn btn-outline" onclick="closeDeleteModal()">Cancel</button>
+                <button type="submit" class="btn btn-danger">Delete</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

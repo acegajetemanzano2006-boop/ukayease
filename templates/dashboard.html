@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — UkayEase{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="metrics-grid">
+    <div class="metric-card">
+        <div class="metric-icon">📦</div>
+        <div class="metric-body">
+            <span class="metric-label">Total Products</span>
+            <span class="metric-value">{{ total_products }}</span>
+        </div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-icon">✅</div>
+        <div class="metric-body">
+            <span class="metric-label">Available Items</span>
+            <span class="metric-value">{{ available_items }}</span>
+        </div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-icon">🏷️</div>
+        <div class="metric-body">
+            <span class="metric-label">Sold Items</span>
+            <span class="metric-value">{{ sold_items }}</span>
+        </div>
+    </div>
+    <div class="metric-card highlight">
+        <div class="metric-icon">💵</div>
+        <div class="metric-body">
+            <span class="metric-label">Total Sales</span>
+            <span class="metric-value">₱{{ "{:,.2f}".format(total_sales) }}</span>
+        </div>
+    </div>
+</div>
+
+<div class="quick-actions">
+    <a href="{{ url_for('add_product') }}" class="btn btn-primary">+ Add Product</a>
+    <a href="{{ url_for('sales') }}" class="btn btn-secondary">Record Sale</a>
+    <a href="{{ url_for('reports') }}" class="btn btn-outline">View Reports</a>
+</div>
+
+<div class="two-col">
+    <section class="card">
+        <div class="card-header">
+            <h3>Recent Products</h3>
+            <a href="{{ url_for('products') }}" class="link-sm">View all</a>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Qty</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in recent_products %}
+                    <tr>
+                        <td>{{ p.item_name }}</td>
+                        <td>{{ p.category }}</td>
+                        <td>₱{{ "{:,.2f}".format(p.price) }}</td>
+                        <td>{{ p.quantity }}</td>
+                        <td>
+                            <span class="badge badge-{{ 'available' if p.status == 'Available' else 'sold' }}">
+                                {{ p.status }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="5" class="empty">No products yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="card">
+        <div class="card-header">
+            <h3>Recent Sales</h3>
+            <a href="{{ url_for('sales') }}" class="link-sm">View all</a>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Customer</th>
+                        <th>Qty</th>
+                        <th>Total</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in recent_sales %}
+                    <tr>
+                        <td>{{ s.product_name }}</td>
+                        <td>{{ s.customer_name }}</td>
+                        <td>{{ s.quantity }}</td>
+                        <td>₱{{ "{:,.2f}".format(s.total_amount) }}</td>
+                        <td>{{ s.sale_date }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="5" class="empty">No sales yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+{% endblock %}

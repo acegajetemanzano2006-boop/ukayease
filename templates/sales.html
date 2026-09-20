@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Sales — UkayEase{% endblock %}
+{% block page_title %}Sales{% endblock %}
+
+{% block content %}
+<div class="two-col sales-layout">
+    <section class="card">
+        <div class="card-header">
+            <h3>Record a Sale</h3>
+        </div>
+        <form method="POST" action="{{ url_for('sales') }}" class="sales-form" id="salesForm">
+            <div class="form-group">
+                <label for="product_id">Product *</label>
+                <select id="product_id" name="product_id" required>
+                    <option value="">— Select product —</option>
+                    {% for p in available_products %}
+                    <option value="{{ p.id }}"
+                            data-price="{{ p.price }}"
+                            data-qty="{{ p.quantity }}">
+                        {{ p.item_name }} (Stock: {{ p.quantity }}) — ₱{{ "{:,.2f}".format(p.price) }}
+                    </option>
+                    {% endfor %}
+                </select>
+                {% if not available_products %}
+                <p class="form-note warn">No products in stock. Add inventory first.</p>
+                {% endif %}
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="quantity">Quantity *</label>
+                    <input type="number" id="quantity" name="quantity" required min="1" step="1" value="1">
+                </div>
+                <div class="form-group">
+                    <label for="unit_price_display">Unit Price</label>
+                    <input type="text" id="unit_price_display" readonly value="₱0.00" class="readonly">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="total_display">Total Amount</label>
+                <input type="text" id="total_display" readonly value="₱0.00" class="readonly total-field">
+            </div>
+
+            <div class="form-group">
+                <label for="customer_name">Customer Name</label>
+                <input type="text" id="customer_name" name="customer_name"
+                       placeholder="Walk-in (default)">
+            </div>
+
+            <div class="form-group">
+                <label for="sale_date">Sale Date *</label>
+                <input type="date" id="sale_date" name="sale_date" required value="{{ today }}">
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block" {% if not available_products %}disabled{% endif %}>
+                Complete Sale
+            </button>
+        </form>
+    </section>
+
+    <section class="card">
+        <div class="card-header">
+            <h3>Sales History</h3>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Product</th>
+                        <th>Customer</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in sales_history %}
+                    <tr>
+                        <td>{{ s.id }}</td>
+                        <td>{{ s.product_name }}</td>
+                        <td>{{ s.customer_name }}</td>
+                        <td>{{ s.quantity }}</td>
+                        <td>₱{{ "{:,.2f}".format(s.unit_price) }}</td>
+                        <td>₱{{ "{:,.2f}".format(s.total_amount) }}</td>
+                        <td>{{ s.sale_date }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="7" class="empty">No sales recorded yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+{% endblock %}
